@@ -1,24 +1,32 @@
 import typescript from "npm:typescript";
 import { defineMiddleware } from "@vanilla-jsx/middleware/mod.ts";
-
-import { resolve, join } from "https://deno.land/std@0.128.0/path/mod.ts";
-
-const decoder = new TextDecoder("utf-8");
+import { serveFile } from "@std/http/file_server.ts";
+import { resolve, join, extname } from "@std/path/mod.ts";
 
 export default (dir: string) => {
   return defineMiddleware(async (req, next) => {
     try {
-      const filepath = join(resolve(Deno.cwd(), dir), req.path || "");
-      const uint8Array = await Deno.readFile(filepath);
-      const source = decoder.decode(uint8Array);
-      const result = typescript.transpileModule(source, {
-        compilerOptions: { module: typescript.ModuleKind.ESNext },
-      });
-      return new Response(result.outputText, {
-        headers: {
-          'Content-Type': 'text/javascript'
+      if (req.path && req.headers.get("sec-fetch-dest") === "script") {
+        const ext = extname(req.path);
+        if (ext && ext !== ".ts") return next();
+        const filepath = join(
+          resolve(Deno.cwd(), dir),
+          ext ? req.path : req.path + ".ts"
+        );
+        const res = await serveFile(req, filepath);
+        if (res.status === 200) {
+          const source = await res.text();
+          const result = typescript.transpileModule(source, {
+            compilerOptions: { module: typescript.ModuleKind.ESNext },
+          });
+          res.headers.set('content-type', 'text/javascript');
+          return new Response(result.outputText, {
+            headers: res.headers,
+          });
         }
-      });
+        return res;
+      }
+      return next();
     } catch (e) {
       console.error(e);
       return next();

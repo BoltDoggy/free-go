@@ -20,13 +20,14 @@ const convertBody = async (body: Request | Response) => {
 export default defineMiddleware(async (req, next) => {
   try {
     const logger = getLogger("fetch");
-    const { path, searchParams, method } = req;
+    const { path, searchParams, method, headers } = req;
     const debugLog = {
       id: nanoid(),
       startTime: Date.now(),
       path,
       method,
       searchParams: searchParams && Object.fromEntries(searchParams.entries()),
+      headers: headers && Object.fromEntries(headers.entries()),
     };
     (async () => {
       const reqBody = await convertBody(req);
@@ -37,7 +38,7 @@ export default defineMiddleware(async (req, next) => {
           body: reqBody,
         })
       );
-      logger.info(`===> ${debugLog.method} ${debugLog.path} `);
+      logger.info(`===> ${debugLog.method} ${debugLog.path} ====> ${debugLog.headers['sec-fetch-dest']}`);
     })();
     const res = await next();
     (async () => {
@@ -56,7 +57,7 @@ export default defineMiddleware(async (req, next) => {
       );
       const logStr = `<=== ${debugLog.method} ${
         debugLog.path
-      } ${status} 耗时: ${endTime - debugLog.startTime}ms`;
+      } <=== ${status} 耗时: ${endTime - debugLog.startTime}ms`;
       if (status === 200) {
         logger.info(logStr);
       } else {

@@ -10,9 +10,9 @@ const ctx = bgCanvas.getContext('2d');
 
 for (let px = bgOffset; px < baseSize; px += pi) {
     for (let py = bgOffset; py < baseSize; py += pi) {
-        ctx.beginPath();
-        ctx.arc(px, py, 0.5, 0, 2 * Math.PI);
-        ctx.fill();
+        ctx?.beginPath();
+        ctx?.arc(px, py, 0.5, 0, 2 * Math.PI);
+        ctx?.fill();
     }
 }
 
