@@ -7,8 +7,17 @@ import {
   Static,
   Middleware,
 } from "@vanilla-jsx/middleware/mod.ts";
-import { logger } from "./middlewares/logger.ts";
+import logger from "./middlewares/logger.ts";
 import typescript from "./middlewares/typescript.ts";
+import { setup as setupLog } from "@std/log/mod.ts";
+
+setupLog({
+  loggers: {
+    fetch: {
+      handlers: ["default"]
+    }
+  }
+})
 
 const myDirname = dirname(fromFileUrl(import.meta.url));
 

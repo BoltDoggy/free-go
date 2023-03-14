@@ -14,7 +14,6 @@ export default (dir: string) => {
       const result = typescript.transpileModule(source, {
         compilerOptions: { module: typescript.ModuleKind.ESNext },
       });
-      console.log(filepath, result);
       return new Response(result.outputText, {
         headers: {
           'Content-Type': 'text/javascript'
