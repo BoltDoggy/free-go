@@ -1,6 +1,6 @@
 import { match } from "https://deno.land/x/path_to_regexp@v6.2.0/index.ts";
-import { resolve, join } from "https://deno.land/std@0.128.0/path/mod.ts";
-import { serveFile } from "https://deno.land/std@0.128.0/http/file_server.ts";
+import { resolve, join } from "@std/path/mod.ts";
+import { serveFile } from "@std/http/file_server.ts";
 
 import { createMiddleware as h } from "./h.ts";
 import { BoltServerRequest, MiddlewareUse } from "./types.ts";
