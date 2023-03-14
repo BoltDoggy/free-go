@@ -6,7 +6,7 @@ import { resolve, join, extname } from "@std/path/mod.ts";
 export default (dir: string) => {
   return defineMiddleware(async (req, next) => {
     try {
-      if (req.path && req.headers.get("sec-fetch-dest") === "script") {
+      if (req.path) {
         const ext = extname(req.path);
         if (ext && ext !== ".ts") return next();
         const filepath = join(

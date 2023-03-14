@@ -81,24 +81,57 @@ const dragState = {
   vmy: 0,
 };
 
-document.addEventListener("mousedown", (e) => {
+const dragStart = (e) => {
   dragState.sx = e.x;
   dragState.sy = e.y;
   dragState.vmx = vMap.x;
   dragState.vmy = vMap.y;
   dragState.draging = true;
+}
+
+document.addEventListener("mousedown", (e) => {
+  dragStart(e);
 });
+
+document.addEventListener("touchstart", (e) => {
+  const { clientX, clientY } = e.touches[0];
+  dragStart({
+    x: clientX,
+    y: clientY
+  })
+});
+
+const dragEnd = () => {
+  dragState.draging = false;
+}
 
 document.addEventListener("mouseup", (e) => {
-  dragState.draging = false;
+  dragEnd();
 });
 
-document.addEventListener("mousemove", (e) => {
+document.addEventListener("touchend", (e) => {
+  dragEnd();
+});
+
+const dragMove = (e) => {
   if (dragState.draging) {
     vMap.x = dragState.vmx + e.x - dragState.sx;
     vMap.y = dragState.vmy + e.y - dragState.sy;
   }
+}
+
+document.addEventListener("mousemove", (e) => {
+  dragMove(e);
 });
+
+document.addEventListener("touchmove", (e) => {
+  e.preventDefault();
+  const { clientX, clientY } = e.touches[0];
+  dragMove({
+    x: clientX,
+    y: clientY
+  });
+})
 
 document.addEventListener("dblclick", (e) => {
   const x = e.x - canvas.width / 2 - vMap.x;

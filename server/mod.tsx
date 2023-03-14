@@ -33,7 +33,7 @@ const routed = (
     {/* <Route path="/placeholder" use={Placeholder}></Route>
     <Route path="/graphql" use={GraphQL}></Route> */}
     <Route
-      path="/(.*)"
+      path="/scripts/(.*)"
       use={typescript(resolve(myDirname, "../src"))}
     ></Route>
     <Static dir={resolve(myDirname, "../src")}></Static>
