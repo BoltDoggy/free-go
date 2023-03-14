@@ -7,6 +7,8 @@
   },
   "importMap": "import-map.json",
   "tasks": {
-    "start": "deno run -A https://deno.land/x/denon/denon.ts run -A ./server/mod.tsx"
+    "start": "deno run -A https://deno.land/x/denon/denon.ts run -A ./server/mod.tsx",
+    "deploy": "deployctl deploy --project=free-go ./server/mod.tsx --token ddp_IrLcU3RCcNuDiOpHktZ0AN2JHN3f033KKb9w",
+    "deploy:prod": "deployctl deploy --project=free-go ./server/mod.tsx --token ddp_IrLcU3RCcNuDiOpHktZ0AN2JHN3f033KKb9w --prod"
   }
 }
