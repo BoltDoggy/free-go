@@ -1,3 +1,5 @@
+import { vMapToCanvas } from "./v-map";
+
 export const canvas = document.getElementById("cj") as HTMLCanvasElement;
 export const ctx = canvas.getContext("2d");
 
@@ -10,3 +12,10 @@ init();
 window.addEventListener("resize", () => {
   init();
 });
+
+export const drawHome = () => {
+  const [rx, ry] = vMapToCanvas(0, 0);
+  ctx?.beginPath();
+  ctx?.arc(rx, ry, 5, 0, 2 * Math.PI);
+  ctx?.fill();
+}

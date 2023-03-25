@@ -3,6 +3,7 @@ export interface BoltServerRequest extends Request {
   path?: string;
   params?: Record<string, unknown>;
   searchParams?: URLSearchParams;
+  cookies?: Record<string, unknown>;
 }
 
 export type MiddlewareUse =

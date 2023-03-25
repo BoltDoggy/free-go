@@ -1,17 +1,19 @@
+import { ctx as targetCtx } from "./main-canvas";
+import { vMapToCanvas } from "./v-map";
+
 export const bgOffset = 10;
 export const pi = 50;
+export const cpCapacityRef = {
+  current: 0,
+};
 const bgCanvas = document.createElement("canvas");
 const ctx = bgCanvas.getContext("2d");
 
 const init = () => {
-  const baseSize =
-    (Math.floor(
-      (window.innerWidth > window.innerHeight
-        ? window.innerWidth
-        : window.innerHeight) / 50
-    ) +
-      1) *
-    50;
+  cpCapacityRef.current = Math.ceil(
+    Math.max(window.innerWidth, window.innerHeight) / pi
+  );
+  const baseSize = cpCapacityRef.current * pi;
 
   bgCanvas.width = baseSize;
   bgCanvas.height = baseSize;
@@ -30,27 +32,28 @@ window.addEventListener("resize", () => {
   init();
 });
 
-export const drawBg = (targetCtx, rx, ry) => {
+export const drawBg = () => {
+  const [rx, ry] = vMapToCanvas(0, 0);
   const rxi = rx > 0 ? bgCanvas.width : -bgCanvas.width;
   const ryi = ry > 0 ? bgCanvas.height : -bgCanvas.height;
   const rxo = (rx % bgCanvas.width) - bgOffset;
   const ryo = (ry % bgCanvas.height) - bgOffset;
-  targetCtx.drawImage(bgCanvas, rxo, ryo, bgCanvas.width, bgCanvas.height);
-  targetCtx.drawImage(
+  targetCtx?.drawImage(bgCanvas, rxo, ryo, bgCanvas.width, bgCanvas.height);
+  targetCtx?.drawImage(
     bgCanvas,
     rxo - rxi,
     ryo,
     bgCanvas.width,
     bgCanvas.height
   );
-  targetCtx.drawImage(
+  targetCtx?.drawImage(
     bgCanvas,
     rxo,
     ryo - ryi,
     bgCanvas.width,
     bgCanvas.height
   );
-  targetCtx.drawImage(
+  targetCtx?.drawImage(
     bgCanvas,
     rxo - rxi,
     ryo - ryi,

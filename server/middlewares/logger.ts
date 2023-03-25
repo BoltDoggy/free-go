@@ -29,6 +29,7 @@ export default defineMiddleware(async (req, next) => {
       searchParams: searchParams && Object.fromEntries(searchParams.entries()),
       headers: headers && Object.fromEntries(headers.entries()),
     };
+    logger.info(`===> ${debugLog.method} ${debugLog.path} ====>`);
     (async () => {
       const reqBody = await convertBody(req);
       logger.debug(
@@ -38,7 +39,6 @@ export default defineMiddleware(async (req, next) => {
           body: reqBody,
         })
       );
-      logger.info(`===> ${debugLog.method} ${debugLog.path} ====> ${debugLog.headers['sec-fetch-dest']}`);
     })();
     const res = await next();
     (async () => {

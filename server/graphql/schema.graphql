@@ -1,0 +1,17 @@
+type cp {
+  x: Int
+  y: Int
+}
+
+type cps {
+  my: [cp]
+  other: [cp]
+}
+
+type Query {
+  cps(x: Int, y: Int, r: Int): cps
+}
+
+type Mutation {
+  add(x: Int, y: Int): Boolean
+}

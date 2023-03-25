@@ -1,3 +1,11 @@
 {
-  "deno.enablePaths": ["./server", "./src/@shared"]
+  "deno.enablePaths": [
+    "./server",
+    "./src/@shared"
+  ],
+  "cSpell.words": [
+    "deployctl",
+    "middlewares",
+    "wasd"
+  ]
 }

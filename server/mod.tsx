@@ -10,6 +10,8 @@ import {
 import logger from "./middlewares/logger.ts";
 import typescript from "./middlewares/typescript.ts";
 import { setup as setupLog } from "@std/log/mod.ts";
+import GraphQL from "./routes/GraphQL.ts";
+import autoUser from "./middlewares/auto-user.ts";
 
 setupLog({
   loggers: {
@@ -22,7 +24,7 @@ setupLog({
 const myDirname = dirname(fromFileUrl(import.meta.url));
 
 const routed = (
-  <Routes use={[logger]}>
+  <Routes use={[logger, autoUser]}>
     <Route
       path="/"
       use={async (req, next) => {
@@ -30,10 +32,13 @@ const routed = (
         return await next();
       }}
     ></Route>
-    {/* <Route path="/placeholder" use={Placeholder}></Route>
-    <Route path="/graphql" use={GraphQL}></Route> */}
+    <Route path="/graphql" use={GraphQL}></Route>
     <Route
       path="/scripts/(.*)"
+      use={typescript(resolve(myDirname, "../src"))}
+    ></Route>
+    <Route
+      path="/@shared/(.*)"
       use={typescript(resolve(myDirname, "../src"))}
     ></Route>
     <Static dir={resolve(myDirname, "../src")}></Static>

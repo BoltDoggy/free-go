@@ -1,4 +1,6 @@
 import { match } from "https://deno.land/x/path_to_regexp@v6.2.0/index.ts";
+import { getCookies } from '@std/http/cookie.ts';
+
 import { resolve, join } from "@std/path/mod.ts";
 import { serveFile } from "@std/http/file_server.ts";
 
@@ -17,6 +19,7 @@ export const Routes = defineMiddlewareX((props) => {
           req._url = url;
           req.path = url.pathname;
           req.searchParams = url.searchParams;
+          req.cookies = getCookies(req.headers);
           return next();
         },
         use,
