@@ -9,6 +9,5 @@ export default defineMiddleware(async (req) => {
   };
   socket.onerror = (e) => console.log("socket errored:", e);
   socket.onclose = () => console.log("socket closed");
-  console.log('response', response)
   return await response;
 });
