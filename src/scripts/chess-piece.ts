@@ -10,14 +10,14 @@ const cps: cps = {};
 const c0 = Math.random().toFixed(6).replace('0.', '#');
 const c1 = Math.random().toFixed(6).replace('0.', '#');
 
-const drawCp = (x, y) => {
+const drawCp = (x: number, y: number) => {
   const cpCanvas = document.createElement("canvas");
   const ctx = cpCanvas.getContext("2d")!;
 
   cpCanvas.width = cpSize*2;
   cpCanvas.height = cpSize*2;
 
-  var gradient = ctx.createLinearGradient(0, 0, cpSize*2, cpSize);
+  const gradient = ctx.createLinearGradient(0, 0, cpSize*2, cpSize);
   gradient.addColorStop(0, `${c0}`);
   gradient.addColorStop(1, `${c1}`);
   ctx.beginPath();
@@ -34,7 +34,7 @@ const drawCp = (x, y) => {
   );
 };
 
-export const polling = async (t) => {
+export const polling = async () => {
   try {
     const [x, y] = getCenterCp();
     const { cps: nowCps } = await queryCps({
