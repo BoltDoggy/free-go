@@ -1,5 +1,5 @@
-import { ctx } from "./main-canvas";
-import { cpToCanvas } from "./v-map";
+import { ctx } from "./main-canvas.ts";
+import { cpToCanvas } from "./v-map.ts";
 
 export const creatingRef: {
   current?: {

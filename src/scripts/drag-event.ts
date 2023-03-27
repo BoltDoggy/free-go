@@ -1,4 +1,4 @@
-import { offsetTo, vMap } from "./v-map";
+import { offsetTo, vMap } from "./v-map.ts";
 
 const dragState = {
   dragging: false,

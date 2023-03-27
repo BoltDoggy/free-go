@@ -1,10 +1,15 @@
-import { canvas, ctx, drawHome } from "./main-canvas";
-import { drawBg, pi } from "./bg-canvas";
-import { drawMyCps, drawOtherCps, cpSize, polling } from "./chess-piece";
-import { canvasToVMap, homeTo, vMapToCp } from "./v-map";
-import { dragEnd, dragMove, dragStart } from "./drag-event";
-import { creatingRef, drawCreatingCps } from "./chess-piece-creating";
-import { addCp } from "./api";
+import { canvas, ctx, drawHome } from "./main-canvas.ts";
+import { drawBg, pi } from "./bg-canvas.ts";
+import { drawMyCps, drawOtherCps, cpSize, polling } from "./chess-piece.ts";
+import { canvasToVMap, homeTo, vMapToCp } from "./v-map.ts";
+import { dragEnd, dragMove, dragStart } from "./drag-event.ts";
+import { creatingRef, drawCreatingCps } from "./chess-piece-creating.ts";
+import { addCp } from "./api.ts";
+import Mine from "./components/Mine.tsx";
+import { h, render } from "preact";
+
+const app = document.getElementById("app");
+app && render(<Mine />, app);
 
 homeTo(0, 0);
 
@@ -64,3 +69,16 @@ document.addEventListener("dblclick", (e) => {
     };
   }
 });
+
+const socket = new WebSocket("ws://localhost:8000/ws-go");
+
+socket.onopen = () => {
+  console.log("socket opened");
+  socket.send("bolt");
+};
+socket.onmessage = (e) => {
+  console.log("socket message:", e.data);
+  // socket.send(new Date().toString());
+};
+socket.onerror = (e) => console.log("socket errored:", e);
+socket.onclose = () => console.log("socket closed");

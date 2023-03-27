@@ -1,11 +1,12 @@
 {
-  "deno.enablePaths": [
-    "./server",
-    "./src/@shared"
-  ],
+  "deno.enable": true,
   "cSpell.words": [
     "deployctl",
+    "importmap",
+    "jybazbhxntqpojrmhgnc",
     "middlewares",
+    "preact",
+    "supabase",
     "wasd"
   ]
 }

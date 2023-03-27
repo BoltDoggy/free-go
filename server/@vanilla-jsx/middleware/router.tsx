@@ -9,7 +9,7 @@ import { BoltServerRequest, MiddlewareUse } from "./types.ts";
 import { Middleware, defineMiddlewareX } from "./middlewareX.ts";
 
 export const Routes = defineMiddlewareX((props) => {
-  const { use } = props;
+  const { use = [] } = props;
   return (
     <Middleware
       {...props}

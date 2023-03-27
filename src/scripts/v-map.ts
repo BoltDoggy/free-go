@@ -1,5 +1,5 @@
-import { pi } from "./bg-canvas";
-import { canvas } from "./main-canvas";
+import { pi } from "./bg-canvas.ts";
+import { canvas } from "./main-canvas.ts";
 
 export const vMap = {
   x: 0,

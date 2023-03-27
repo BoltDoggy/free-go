@@ -3,7 +3,8 @@
   "compilerOptions": {
     "jsx": "react",
     "jsxFactory": "h",
-    "jsxFragmentFactory": "Fragment"
+    "jsxFragmentFactory": "Fragment",
+    "lib": ["DOM", "deno.ns"]
   },
   "importMap": "import-map.json",
   "tasks": {

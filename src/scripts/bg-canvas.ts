@@ -1,5 +1,5 @@
-import { ctx as targetCtx } from "./main-canvas";
-import { vMapToCanvas } from "./v-map";
+import { ctx as targetCtx } from "./main-canvas.ts";
+import { vMapToCanvas } from "./v-map.ts";
 
 export const bgOffset = 10;
 export const pi = 50;
