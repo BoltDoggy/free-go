@@ -1,15 +1,6 @@
-import { h } from "preact";
-import styled from 'styled-components';
-
-const MineWrapper = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100px;
-  height: 100px;
-  background: red;
-`;
+import { h } from "npm:preact";
+import { css } from 'npm:@emotion/css';
 
 export default () => {
-  return <MineWrapper>我的</MineWrapper>;
+  return <div className={css`color: red;`}>我的</div>;
 };

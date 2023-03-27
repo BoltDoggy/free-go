@@ -6,7 +6,7 @@ import { dragEnd, dragMove, dragStart } from "./drag-event.ts";
 import { creatingRef, drawCreatingCps } from "./chess-piece-creating.ts";
 import { addCp } from "./api.ts";
 import Mine from "./components/Mine.tsx";
-import { h, render } from "preact";
+import { h, render } from "npm:preact";
 
 const app = document.getElementById("app");
 app && render(<Mine />, app);

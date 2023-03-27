@@ -1,12 +1,12 @@
 {
   "imports": {
-    "npm:typescript": "https://esm.sh/typescript@4.9.5",
-    "npm:nanoid": "https://esm.sh/nanoid@4.0.0",
-    "@std/": "https://deno.land/std@0.156.0/",
     "@shared/": "./src/@shared/",
     "@vanilla-jsx/": "./server/@vanilla-jsx/",
-    "https://deno.land/std/node/": "https://deno.land/std@0.156.0/node/",
-    "preact": "https://esm.sh/preact@10.13.1",
-    "styled-components": "https://esm.sh/styled-components@5.3.9"
+    "@std/": "https://deno.land/std/",
+    "https://deno.land/std/": "https://deno.land/std@0.156.0/",
+    "npm:typescript": "https://esm.sh/typescript@4.9.5",
+    "npm:nanoid": "https://esm.sh/nanoid@4.0.0",
+    "npm:preact": "https://esm.sh/preact@10.13.1",
+    "npm:@emotion/css": "https://esm.sh/@emotion/css@11.10.6"
   }
 }
