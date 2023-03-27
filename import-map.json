@@ -6,6 +6,7 @@
     "npm:typescript": "https://esm.sh/typescript@4.9.5",
     "npm:nanoid": "https://esm.sh/nanoid@4.0.0",
     "npm:preact": "https://esm.sh/preact@10.13.1",
-    "npm:@emotion/css": "https://esm.sh/@emotion/css@11.10.6"
+    "npm:@emotion/css": "https://esm.sh/@emotion/css@11.10.6",
+    "npm:graphql": "https://esm.sh/graphql@16.6.0"
   }
 }
