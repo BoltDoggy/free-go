@@ -1,11 +1,5 @@
-import {
-  buildSchema,
-} from "https://cdn.skypack.dev/graphql?dts";
-import {
-  dirname,
-  fromFileUrl,
-  resolve,
-} from "https://deno.land/std@0.128.0/path/mod.ts";
+import { buildSchema } from "npm:graphql";
+import { dirname, fromFileUrl, resolve } from "@std/path/mod.ts";
 
 export async function readSchema() {
   const schemaStr = await Deno.readTextFile(

@@ -2,7 +2,6 @@ import { JsxEmit, ModuleKind, transpileModule } from "npm:typescript";
 import { defineMiddleware } from "@vanilla-jsx/middleware/mod.ts";
 import { serveFile } from "@std/http/file_server.ts";
 import { resolve, join, extname } from "@std/path/mod.ts";
-import * as jsonc from "https://deno.land/std@0.181.0/jsonc/mod.ts";
 
 Deno;
 

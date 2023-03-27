@@ -1,4 +1,4 @@
-import { graphql, GraphQLArgs } from "https://cdn.skypack.dev/graphql?dts";
+import { graphql, GraphQLArgs } from "npm:graphql";
 import { readSchemaPromise, readSchema } from "../graphql/schema.ts";
 import rootValue from "../graphql/root.ts";
 import { defineMiddleware } from "@vanilla-jsx/middleware/mod.ts";
