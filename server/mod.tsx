@@ -1,12 +1,11 @@
 import { serve } from "@std/http/server.ts";
 import { dirname, fromFileUrl, resolve } from "@std/path/mod.ts";
+import { Static, Middleware } from "@vanilla-jsx/middleware/mod.ts";
 import {
   createMiddleware as h,
-  Routes,
   Route,
-  Static,
-  Middleware,
-} from "@vanilla-jsx/middleware/mod.ts";
+  createRoutes,
+} from "@vanilla-jsx/server-router/mod.ts";
 import logger from "./middlewares/logger.ts";
 import typescript from "./middlewares/typescript.ts";
 import { setup as setupLog } from "@std/log/mod.ts";
@@ -24,32 +23,38 @@ setupLog({
 
 const myDirname = dirname(fromFileUrl(import.meta.url));
 
-const routed = (
-  <Routes>
-    <Route path="/ws-go" use={WsGo}></Route>
-    <Routes use={[logger, autoUser]}>
+const routed = createRoutes(
+  <Route>
+    <Route path="/ws-go" use={WsGo as any}></Route>
+    <Route use={[logger as any, autoUser]}>
       <Route
         path="/"
         use={async (req, next) => {
-          req.path = "/index.html";
+          if (!req._route?.isFuzzyMatch && req._url) {
+            req._url.pathname = "/index.html";
+          }
           return await next();
         }}
       ></Route>
-      <Route path="/graphql" use={GraphQL}></Route>
+      <Route path="/b">
+        <Route
+          path="/a"
+          use={(req) => {
+            return new Response("111");
+          }}
+        ></Route>
+      </Route>
+      <Route path="/graphql" use={GraphQL as any}></Route>
       <Route
         path="/(.*).(ts|tsx)"
-        use={typescript(resolve(myDirname, "../src"))}
+        use={typescript(resolve(myDirname, "../src")) as any}
       ></Route>
-      <Static use={[typescript(resolve(myDirname, "../src"))]} dir={resolve(myDirname, "../src")}></Static>
-      <Middleware
-        use={async (req) => {
-          return await new Response("404", {
-            status: 404,
-          });
-        }}
-      ></Middleware>
-    </Routes>
-  </Routes>
+      <Static
+        use={[typescript(resolve(myDirname, "../src"))]}
+        dir={resolve(myDirname, "../src")}
+      ></Static>
+    </Route>
+  </Route>
 );
 
 serve((req) => routed(req));

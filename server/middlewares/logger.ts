@@ -1,7 +1,7 @@
 import { nanoid } from "https://deno.land/x/nanoid@v3.0.0/mod.ts";
 import { defineMiddleware } from "@vanilla-jsx/middleware/mod.ts";
 import { getLogger } from "@std/log/mod.ts";
-import { stringify } from "@std/encoding/yaml.ts";
+import { stringify } from "@std/yaml/stringify.ts";
 
 const convertBody = async (body: Request | Response) => {
   try {
@@ -37,6 +37,8 @@ export default defineMiddleware(async (req, next) => {
           type: "===>",
           ...debugLog,
           body: reqBody,
+        }, {
+          skipInvalid: true
         })
       );
     })();
@@ -53,6 +55,8 @@ export default defineMiddleware(async (req, next) => {
           status,
           statusText,
           body: resBody,
+        }, {
+          skipInvalid: true
         })
       );
       const logStr = `<=== ${debugLog.method} ${
