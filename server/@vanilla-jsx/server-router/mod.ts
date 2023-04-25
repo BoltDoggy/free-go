@@ -1,6 +1,7 @@
 import { BoltOnion, BoltMiddleware } from "@bolt/onion/mod.ts";
 import { match } from "https://deno.land/x/path_to_regexp@v6.2.0/index.ts";
-import { join } from "@std/path/mod.ts";
+import { join, resolve } from "@std/path/mod.ts";
+import { serveFile } from "@std/http/file_server.ts";
 
 type RouterCtx = {
   _url?: URL;
@@ -71,6 +72,22 @@ export const Route = (props: {
         ctx._route.params = fuzzyMatchObj.params;
         return exec(ctx, next);
       }
+    }
+    return next();
+  };
+};
+
+export const Static = (props: {
+  dir: string;
+  use?: ServerMiddleware | ServerMiddleware[];
+  children?: ServerMiddleware[];
+}): ServerMiddleware => {
+  const { children = [], use = [], dir } = props;
+  const exec = new BoltOnion([use, ...children].flat()).compose();
+  return (ctx, next) => {
+    if (ctx._url) {
+      const filepath = join(resolve(Deno.cwd(), dir), ctx._url.pathname || "");
+      return exec(ctx, () => serveFile(ctx, filepath));
     }
     return next();
   };

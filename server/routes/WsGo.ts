@@ -1,6 +1,6 @@
-import { defineMiddleware } from "../@vanilla-jsx/middleware/mod.ts";
+import { onion } from "@vanilla-jsx/server-router/mod.ts";
 
-export default defineMiddleware(async (req) => {
+export default onion.defineMiddleware((req) => {
   const { socket, response } = Deno.upgradeWebSocket(req);
   socket.onopen = () => console.log("socket opened");
   socket.onmessage = (e) => {
@@ -9,5 +9,5 @@ export default defineMiddleware(async (req) => {
   };
   socket.onerror = (e) => console.log("socket errored:", e);
   socket.onclose = () => console.log("socket closed");
-  return await response;
+  return response;
 });

@@ -1,8 +1,9 @@
 import { nanoid } from "npm:nanoid";
 import { setCookie } from "@std/http/cookie.ts";
-import { defineMiddleware } from "@vanilla-jsx/middleware/mod.ts";
+import { onion } from "@vanilla-jsx/server-router/mod.ts";
+import initCookieCtx from "./init-cookie-ctx.ts";
 
-export default defineMiddleware(async (req, next) => {
+export default onion.use(initCookieCtx).defineMiddleware(async (req, next) => {
   if (!req.cookies?.freeGo) {
     req.cookies = {
       ...req.cookies,
@@ -10,9 +11,11 @@ export default defineMiddleware(async (req, next) => {
     };
   }
   const res = await next();
-  setCookie(res.headers, {
-    name: "freeGo",
-    value: req.cookies?.freeGo as string,
-  });
+  if (res) {
+    setCookie(res.headers, {
+      name: "freeGo",
+      value: req.cookies?.freeGo as string,
+    });
+  }
   return res;
 });
