@@ -67,10 +67,16 @@ export const Route = (props: {
         join(realPath, "(.*)")
       )(ctx._url.pathname || "");
       if (fuzzyMatchObj) {
-        ctx._route.isFuzzyMatch = true;
+        const parentPrefix = ctx._route.prefix;
         ctx._route.prefix = realPath;
+        ctx._route.isFuzzyMatch = true;
         ctx._route.params = fuzzyMatchObj.params;
-        return exec(ctx, next);
+        return exec(ctx, () => {
+          if (ctx._route) {
+            ctx._route.prefix = parentPrefix;
+          }
+          return next()
+        });
       }
     }
     return next();
@@ -85,10 +91,9 @@ export const Static = (props: {
   const { children = [], use = [], dir } = props;
   const exec = new BoltOnion([use, ...children].flat()).compose();
   return (ctx, next) => {
-    if (ctx._url) {
-      const filepath = join(resolve(Deno.cwd(), dir), ctx._url.pathname || "");
-      return exec(ctx, () => serveFile(ctx, filepath));
-    }
-    return next();
+    if (!ctx._url) return next();
+
+    const filepath = join(resolve(Deno.cwd(), dir), ctx._url.pathname || "");
+    return exec(ctx, () => serveFile(ctx, filepath));
   };
 };

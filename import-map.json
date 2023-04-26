@@ -1,7 +1,7 @@
 {
   "imports": {
     "@shared/": "./src/@shared/",
-    "@vanilla-jsx/": "./server/@vanilla-jsx/",
+    "@vanilla-jsx/": "./@vanilla-jsx/",
     "@bolt/": "./@bolt/",
     "@std/": "https://deno.land/std@0.181.0/",
     "npm:typescript": "https://esm.sh/typescript@4.9.5",

@@ -1,4 +1,4 @@
-import { BoltMiddleware, compose } from "./compose.ts";
+import { BoltMiddleware, compose } from "@bolt/compose/mod.ts";
 
 export type { BoltMiddleware };
 

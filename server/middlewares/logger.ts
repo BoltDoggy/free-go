@@ -18,72 +18,73 @@ const convertBody = async (body: Request | Response) => {
   }
 };
 
-export default onion.defineMiddleware(async (req, next) => {
-  try {
-    const logger = getLogger("fetch");
-    const { method, headers, _url } = req;
-    const debugLog = {
-      id: nanoid(),
-      startTime: Date.now(),
-      pathname: _url?.pathname,
-      method,
-      searchParams:
-        _url?.searchParams &&
-        Object.fromEntries(Object.entries(_url?.searchParams)),
-      headers: headers && Object.fromEntries(Object.entries(headers)),
-    };
-    logger.info(gray(`===> ${debugLog.method} ${debugLog.pathname} ====>`));
-    (async () => {
-      const reqBody = await convertBody(req);
-      logger.debug(
-        stringify(
-          {
-            type: "===>",
-            ...debugLog,
-            body: reqBody,
-          },
-          {
-            skipInvalid: true,
-          }
-        )
-      );
-    })();
-    const res = await next();
-    if (res) {
+export default () =>
+  onion.defineMiddleware(async (req, next) => {
+    try {
+      const logger = getLogger("fetch");
+      const { method, headers, _url } = req;
+      const debugLog = {
+        id: nanoid(),
+        startTime: Date.now(),
+        pathname: _url?.pathname,
+        method,
+        searchParams:
+          _url?.searchParams &&
+          Object.fromEntries(Object.entries(_url?.searchParams)),
+        headers: headers && Object.fromEntries(Object.entries(headers)),
+      };
+      logger.info(gray(`===> ${debugLog.method} ${debugLog.pathname} ====>`));
       (async () => {
-        const { status, statusText } = res;
-        const endTime = Date.now();
-        const resBody = await convertBody(res);
+        const reqBody = await convertBody(req);
         logger.debug(
           stringify(
             {
-              type: "<===",
+              type: "===>",
               ...debugLog,
-              endTime,
-              status,
-              statusText,
-              body: resBody,
+              body: reqBody,
             },
             {
               skipInvalid: true,
             }
           )
         );
-        const logStr = `<=== ${debugLog.method} ${
-          debugLog.pathname
-        } <=== ${status} 耗时: ${endTime - debugLog.startTime}ms`;
-        if (status === 200) {
-          logger.info(logStr);
-        } else {
-          logger.warning(logStr);
-        }
       })();
-      return res.clone();
+      const res = await next();
+      if (res) {
+        (async () => {
+          const { status, statusText } = res;
+          const endTime = Date.now();
+          const resBody = await convertBody(res);
+          logger.debug(
+            stringify(
+              {
+                type: "<===",
+                ...debugLog,
+                endTime,
+                status,
+                statusText,
+                body: resBody,
+              },
+              {
+                skipInvalid: true,
+              }
+            )
+          );
+          const logStr = `<=== ${debugLog.method} ${
+            debugLog.pathname
+          } <=== ${status} 耗时: ${endTime - debugLog.startTime}ms`;
+          if (status === 200) {
+            logger.info(logStr);
+          } else {
+            logger.warning(logStr);
+          }
+        })();
+        return res.clone();
+      }
+    } catch (error) {
+      console.error(error);
+      return new Response("500", {
+        status: 500,
+      });
     }
-  } catch (error) {
-    console.error(error);
-    return new Response("500", {
-      status: 500,
-    });
-  }
-});
+  });
