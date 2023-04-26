@@ -1,12 +1,13 @@
 import { graphql, GraphQLArgs } from "npm:graphql";
 import { readSchemaPromise, readSchema } from "../graphql/schema.ts";
 import rootValue from "../graphql/root.ts";
-import { onion } from "@vanilla-jsx/server-router/mod.ts";
-import initCookieCtx from "../middlewares/init-cookie-ctx.ts";
+import { defineMiddleware } from "../../@vanilla-jsx/server-router/mod.ts";
+import { CookieContext } from "../middlewares/init-cookie-ctx.ts";
 
 const ENV = Deno.env.get("ENV");
 
-export default onion.use(initCookieCtx).defineMiddleware(async (req) => {
+export const [GraphQL] = defineMiddleware("GraphQL", async (safe, req) => {
+  const { cookies } = safe.useContext(CookieContext);
   const { query, variables, operationName } = (await req.json()) as unknown as {
     query: string;
     variables: GraphQLArgs["variableValues"];
@@ -20,7 +21,7 @@ export default onion.use(initCookieCtx).defineMiddleware(async (req) => {
     variableValues: variables,
     operationName,
     contextValue: {
-      freeGo: req.cookies?.freeGo,
+      freeGo: cookies.freeGo,
     },
   });
   return new Response(JSON.stringify(json));

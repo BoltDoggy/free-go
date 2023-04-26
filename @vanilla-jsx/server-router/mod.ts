@@ -1,9 +1,13 @@
-import { BoltOnion, BoltMiddleware } from "@bolt/onion/mod.ts";
+import { compose } from "@bolt/compose/mod.ts";
+import { SafeOnion } from "@bolt/safe-onion/mod.ts";
 import { match } from "https://deno.land/x/path_to_regexp@v6.2.0/index.ts";
 import { join, resolve } from "@std/path/mod.ts";
 import { serveFile } from "@std/http/file_server.ts";
+import { createMiddleware, ServerMiddleware } from "./h.ts";
 
-type RouterCtx = {
+export { createMiddleware };
+
+export type RouterCtx = {
   _url?: URL;
   _route?: {
     params?: Record<string, unknown>;
@@ -11,36 +15,31 @@ type RouterCtx = {
     isFuzzyMatch?: boolean;
   };
 };
-type ServerMiddleware = BoltMiddleware<Request & RouterCtx, Response>;
 
-export const onion = new BoltOnion<Request, Response>().use<RouterCtx>(
-  (ctx, next) => {
-    ctx._url = new URL(ctx.url);
-    ctx._route = {};
-    return next();
-  }
-);
+export const { defineMiddleware, middleware: initSafeOnion } = new SafeOnion<
+  Request,
+  Response
+>();
 
-export const createMiddleware = (
-  tag: (props: Record<string, unknown>) => ServerMiddleware,
-  props: Record<string, unknown>,
-  ...children: ServerMiddleware[]
-) => {
-  if (typeof tag === "function") {
-    return tag({
-      children,
-      ...props,
-    });
-  }
-};
+export const [initRouter, RouterContext] = defineMiddleware<{
+  url: URL;
+  route: {
+    params?: Record<string, unknown>;
+    prefix?: string;
+    isFuzzyMatch?: boolean;
+  };
+}>("vanilla-jsx-server-router", (safe, req, next) => {
+  const ctx = safe.createContext();
+  ctx.url = new URL(req.url);
+  ctx.route = {};
+  return next();
+});
 
 export const createRoutes = (use: ServerMiddleware) => {
-  const exec = onion.use(use).compose();
+  const exec = compose([initSafeOnion, initRouter, use]);
   return async (req: Request) => {
     const res = await exec(req);
-    if (!res) {
-      return new Response("404", { status: 404 });
-    }
+    if (!res) return new Response("404", { status: 404 });
     return res;
   };
 };
@@ -51,33 +50,33 @@ export const Route = (props: {
   children?: ServerMiddleware[];
 }): ServerMiddleware => {
   const { children = [], use = [], path = "./" } = props;
-  const exec = new BoltOnion([use, ...children].flat()).compose();
+  const exec = compose([use, ...children].flat());
   return (ctx, next) => {
-    const realPath = join(ctx._route?.prefix || "/", path);
-    if (ctx._url && ctx._route) {
-      const matchObj = match<Record<string, unknown>>(realPath)(
-        ctx._url.pathname || ""
-      );
-      if (matchObj) {
-        ctx._route.isFuzzyMatch = false;
-        ctx._route.params = matchObj.params;
-        return exec(ctx);
-      }
-      const fuzzyMatchObj = match<Record<string, unknown>>(
-        join(realPath, "(.*)")
-      )(ctx._url.pathname || "");
-      if (fuzzyMatchObj) {
-        const parentPrefix = ctx._route.prefix;
-        ctx._route.prefix = realPath;
-        ctx._route.isFuzzyMatch = true;
-        ctx._route.params = fuzzyMatchObj.params;
-        return exec(ctx, () => {
-          if (ctx._route) {
-            ctx._route.prefix = parentPrefix;
-          }
-          return next()
-        });
-      }
+    const routerCtx = SafeOnion.useContext(ctx, RouterContext);
+    const { url, route } = routerCtx;
+    const realPath = join(route.prefix || "/", path);
+
+    const matchObj = match<Record<string, unknown>>(realPath)(
+      routerCtx.url.pathname || ""
+    );
+    if (matchObj) {
+      route.isFuzzyMatch = false;
+      route.params = matchObj.params;
+      return exec(ctx);
+    }
+
+    const fuzzyMatchObj = match<Record<string, unknown>>(
+      join(realPath, "(.*)")
+    )(url.pathname || "");
+    if (fuzzyMatchObj) {
+      const parentPrefix = route.prefix;
+      route.prefix = realPath;
+      route.isFuzzyMatch = true;
+      route.params = fuzzyMatchObj.params;
+      return exec(ctx, () => {
+        route.prefix = parentPrefix;
+        return next();
+      });
     }
     return next();
   };
@@ -89,11 +88,14 @@ export const Static = (props: {
   children?: ServerMiddleware[];
 }): ServerMiddleware => {
   const { children = [], use = [], dir } = props;
-  const exec = new BoltOnion([use, ...children].flat()).compose();
-  return (ctx, next) => {
-    if (!ctx._url) return next();
+  const exec = compose([use, ...children].flat());
+  return (req, next) => {
+    const routerCtx = SafeOnion.useContext(req, RouterContext);
 
-    const filepath = join(resolve(Deno.cwd(), dir), ctx._url.pathname || "");
-    return exec(ctx, () => serveFile(ctx, filepath));
+    const filepath = join(
+      resolve(Deno.cwd(), dir),
+      routerCtx.url.pathname || ""
+    );
+    return exec(req, () => serveFile(req, filepath));
   };
 };

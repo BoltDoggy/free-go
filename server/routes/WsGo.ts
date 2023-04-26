@@ -1,6 +1,6 @@
-import { onion } from "@vanilla-jsx/server-router/mod.ts";
+import { defineMiddleware } from "../../@vanilla-jsx/server-router/mod.ts";
 
-export default onion.defineMiddleware((req) => {
+export const [WsGo] = defineMiddleware("WsGo", (_safe, req) => {
   const { socket, response } = Deno.upgradeWebSocket(req);
   socket.onopen = () => console.log("socket opened");
   socket.onmessage = (e) => {

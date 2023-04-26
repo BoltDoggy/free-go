@@ -1,10 +1,10 @@
-import { onion } from "@vanilla-jsx/server-router/mod.ts";
+import { defineMiddleware } from "../../@vanilla-jsx/server-router/mod.ts";
 import { getCookies } from "@std/http/cookie.ts";
 
-export default () =>
-  onion.defineMiddleware<{
-    cookies?: Record<string, string>;
-  }>((req, next) => {
-    req.cookies = getCookies(req.headers);
-    return next();
-  });
+export const [initCookie, CookieContext] = defineMiddleware<{
+  cookies: Record<string, string>;
+}>("initCookie", (safe, req, next) => {
+  const ctx = safe.createContext();
+  ctx.cookies = getCookies(req.headers);
+  return next();
+});

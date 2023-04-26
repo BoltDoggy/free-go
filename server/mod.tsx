@@ -7,15 +7,13 @@ import {
   Static,
 } from "@vanilla-jsx/server-router/mod.ts";
 import { setup as setupLog } from "@std/log/mod.ts";
-import GraphQL from "./routes/GraphQL.ts";
-import WsGo from "./routes/WsGo.ts";
-import {
-  myAutoIndex,
-  myAutoUser,
-  myInitCookieCtx,
-  myLogger,
-  myTypescript,
-} from "./middlewares/mod.ts";
+import { GraphQL } from "./routes/GraphQL.ts";
+import { WsGo } from "./routes/WsGo.ts";
+import { logger } from "./middlewares/logger.ts";
+import { initCookie } from "./middlewares/init-cookie-ctx.ts";
+import { autoUser } from "./middlewares/auto-user.ts";
+import { autoIndex } from "./middlewares/auto-index.ts";
+import { typescript } from "./middlewares/typescript.ts";
 
 setupLog({
   loggers: {
@@ -30,9 +28,9 @@ const myDirname = dirname(fromFileUrl(import.meta.url));
 const routed = createRoutes(
   <Route>
     <Route path="/ws-go" use={WsGo}></Route>
-    <Route use={[myLogger, myInitCookieCtx, myAutoUser, myAutoIndex]}>
+    <Route use={[logger, initCookie, autoUser, autoIndex]}>
       <Route path="/graphql" use={GraphQL}></Route>
-      <Static use={[myTypescript]} dir={resolve(myDirname, "../src")}></Static>
+      <Static use={[typescript]} dir={resolve(myDirname, "../src")}></Static>
     </Route>
   </Route>
 );

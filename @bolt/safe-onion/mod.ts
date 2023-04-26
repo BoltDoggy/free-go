@@ -1,47 +1,70 @@
 import { BoltMiddleware, BoltMiddlewareNext } from "@bolt/compose/mod.ts";
 
-type SafeContextType<T> = symbol & T;
+export type SafeContextType<T> = symbol & T;
+export type SafeMiddleware<T, R, C> = (
+  safe: {
+    createContext: () => C;
+    useContext: <S>(DependenceContext: SafeContextType<S>) => Readonly<S>;
+  },
+  ctx: T,
+  next: BoltMiddlewareNext<R>
+) => R | Promise<R | void>;
 const names = new Map();
 
 export class SafeOnion<T, R> {
-  middleware = (
-    ctx: {
-      _safeOnion: Map<unknown, unknown>;
+  static useContext = <S, C>(
+    req: C & {
+      _safeOnion?: Map<unknown, unknown>;
     },
-    next: BoltMiddlewareNext<R>
-  ) => {
-    ctx._safeOnion = new Map();
+    DependenceContext: SafeContextType<S>
+  ): Readonly<S> => {
+    const { _safeOnion } = req;
+    if (!_safeOnion)
+      throw new Error("SafeOnion: 你需要添加 safeOnion middleware");
+    const value = _safeOnion.get(DependenceContext);
+    if (!value)
+      throw new Error(
+        `SafeOnion: 你需要添加 ${names.get(DependenceContext)} middleware`
+      );
+    return _safeOnion.get(DependenceContext) as Readonly<S>;
+  };
+
+  middleware: BoltMiddleware<T, R> = (req, next) => {
+    const _ctx = req as {
+      _safeOnion?: Map<unknown, unknown>;
+    };
+    _ctx._safeOnion = new Map();
     return next();
   };
 
   defineMiddleware = <S>(
     name: string,
-    middleware: BoltMiddleware<
-      T & {
-        createContext: () => S;
-        useContext: <S>(middleware: SafeContextType<S>) => Readonly<S>;
-      },
-      R
-    >
+    middleware: SafeMiddleware<T, R, S>
   ): [BoltMiddleware<T, R>, SafeContextType<S>] => {
     const MyContext = Symbol() as SafeContextType<S>;
     names.set(MyContext, name);
     return [
-      (ctx, next) => {
-        const _safeOnion = (ctx as any)._safeOnion as Map<unknown, unknown>;
+      (req, next) => {
+        const _ctx = req as {
+          _safeOnion?: Map<unknown, unknown>;
+        };
+        const { _safeOnion } = _ctx;
         if (!_safeOnion)
           throw new Error("SafeOnion: 你需要添加 safeOnion middleware");
+        if (_safeOnion.get(MyContext))
+          throw new Error(`SafeOnion: ${name} middleware 重复添加`);
         return middleware(
-          Object.assign({}, ctx, {
+          {
             createContext: () => {
               const self = {};
               _safeOnion.set(MyContext, self);
-              return {} as S;
+              return self as S;
             },
-            useContext: <S>(MyContext: SafeContextType<S>): S => {
-              return _safeOnion?.get(MyContext) as S;
-            },
-          }),
+            useContext: <S>(
+              DependenceContext: SafeContextType<S>
+            ): Readonly<S> => SafeOnion.useContext(_ctx, DependenceContext),
+          },
+          req,
           next
         );
       },

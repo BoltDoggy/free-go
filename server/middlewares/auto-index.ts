@@ -1,8 +1,12 @@
-import { onion } from "@vanilla-jsx/server-router/mod.ts";
+import {
+  RouterContext,
+  defineMiddleware,
+} from "../../@vanilla-jsx/server-router/mod.ts";
 
-export default () => onion.defineMiddleware((req, next) => {
-  if (!req._route?.isFuzzyMatch && req._url) {
-    req._url.pathname = "/index.html";
+export const [autoIndex] = defineMiddleware("autoIndex", (safe, _req, next) => {
+  const { route, url } = safe.useContext(RouterContext);
+  if (!route.isFuzzyMatch) {
+    url.pathname = "/index.html";
   }
   return next();
 });
