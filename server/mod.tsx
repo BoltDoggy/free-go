@@ -9,7 +9,7 @@ import {
 import { setup as setupLog } from "@std/log/mod.ts";
 import { GraphQL } from "./routes/GraphQL.ts";
 import { WsGo } from "./routes/WsGo.ts";
-import { logger } from "./middlewares/logger.ts";
+import { loggerMiddleware } from "./middlewares/logger.ts";
 import { initCookie } from "./middlewares/init-cookie-ctx.ts";
 import { autoUser } from "./middlewares/auto-user.ts";
 import { autoIndex } from "./middlewares/auto-index.ts";
@@ -28,7 +28,7 @@ const myDirname = dirname(fromFileUrl(import.meta.url));
 const routed = createRoutes(
   <Route>
     <Route path="/ws-go" use={WsGo}></Route>
-    <Route use={[logger, initCookie, autoUser, autoIndex]}>
+    <Route use={[loggerMiddleware, initCookie, autoUser, autoIndex]}>
       <Route path="/graphql" use={GraphQL}></Route>
       <Static use={[typescript]} dir={resolve(myDirname, "../src")}></Static>
     </Route>

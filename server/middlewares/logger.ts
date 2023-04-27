@@ -8,9 +8,11 @@ import { stringify } from "@std/yaml/stringify.ts";
 import { gray } from "@std/fmt/colors.ts";
 
 const convertBody = async (body: Request | Response) => {
+  const logger = getLogger("convert");
   try {
     return await body.clone().json();
   } catch (e) {
+    logger.error(e);
     const text = await body.clone().text();
     if (text.length > 90) {
       return `${text.slice(0, 30)} ... <省略 ${
@@ -21,7 +23,7 @@ const convertBody = async (body: Request | Response) => {
   }
 };
 
-export const [logger] = defineMiddleware("logger", async (safe, req, next) => {
+export const [loggerMiddleware] = defineMiddleware("loggerMiddleware", async (safe, req, next) => {
   const { url } = safe.useContext(RouterContext);
   const logger = getLogger("fetch");
   const { method, headers } = req;
