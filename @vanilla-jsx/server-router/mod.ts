@@ -52,12 +52,11 @@ export const Route = (props: {
   const { children = [], use = [], path = "./" } = props;
   const exec = compose([use, ...children].flat());
   return (ctx, next) => {
-    const routerCtx = SafeOnion.useContext(ctx, RouterContext);
-    const { url, route } = routerCtx;
+    const { url, route } = SafeOnion.useContext(ctx, RouterContext);
     const realPath = join(route.prefix || "/", path);
 
     const matchObj = match<Record<string, unknown>>(realPath)(
-      routerCtx.url.pathname || ""
+      url.pathname || ""
     );
     if (matchObj) {
       route.isFuzzyMatch = false;
@@ -89,7 +88,7 @@ export const Static = (props: {
 }): ServerMiddleware => {
   const { children = [], use = [], dir } = props;
   const exec = compose([use, ...children].flat());
-  return (req, next) => {
+  return (req) => {
     const routerCtx = SafeOnion.useContext(req, RouterContext);
 
     const filepath = join(

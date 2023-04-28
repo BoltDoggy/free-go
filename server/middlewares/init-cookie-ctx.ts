@@ -1,4 +1,4 @@
-import { defineMiddleware } from "../../@vanilla-jsx/server-router/mod.ts";
+import { defineMiddleware } from "@vanilla-jsx/server-router/mod.ts";
 import { getCookies } from "@std/http/cookie.ts";
 
 export const [initCookie, CookieContext] = defineMiddleware<{
