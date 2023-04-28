@@ -8,6 +8,8 @@
     "npm:nanoid": "https://esm.sh/nanoid@4.0.0",
     "npm:preact": "https://esm.sh/preact@10.13.1",
     "npm:@emotion/css": "https://esm.sh/@emotion/css@11.10.6",
-    "npm:graphql": "https://esm.sh/graphql@16.6.0"
+    "npm:@mdx-js/mdx": "https://esm.sh/@mdx-js/mdx@2.3.0",
+    "npm:graphql": "https://esm.sh/graphql@16.6.0",
+    "https://esm.sh/v117/periscopic@3.1.0/types/index.js~.d.ts": "./empty.d.ts"
   }
 }

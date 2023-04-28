@@ -15,6 +15,7 @@ import { autoUser } from "./middlewares/auto-user.ts";
 import { autoIndex } from "./middlewares/auto-index.ts";
 import { typescript } from "./middlewares/typescript.ts";
 import { initFileExt } from "./middlewares/init-file-ext.ts";
+import { mdxMiddleware } from "./middlewares/mdx.ts";
 
 setupLog({
   loggers: {
@@ -31,7 +32,7 @@ const routed = createRoutes(
     <Route path="/ws-go" use={WsGo}></Route>
     <Route use={[loggerMiddleware, initCookie, autoUser, autoIndex]}>
       <Route path="/graphql" use={GraphQL}></Route>
-      <Static use={[initFileExt, typescript]} dir={resolve(myDirname, "../src")}></Static>
+      <Static use={[initFileExt, typescript, mdxMiddleware]} dir={resolve(myDirname, "../src")}></Static>
     </Route>
   </Route>
 );

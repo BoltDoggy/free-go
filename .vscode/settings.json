@@ -1,13 +1,4 @@
 {
   "deno.enable": true,
-  "cSpell.words": [
-    "deno",
-    "deployctl",
-    "importmap",
-    "jybazbhxntqpojrmhgnc",
-    "middlewares",
-    "preact",
-    "supabase",
-    "wasd"
-  ]
+  "deno.enablePaths": []
 }

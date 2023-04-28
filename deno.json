@@ -4,7 +4,8 @@
     "jsx": "react",
     "jsxFactory": "h",
     "jsxFragmentFactory": "Fragment",
-    "lib": ["deno.ns"]
+    "lib": ["deno.ns"],
+    "types": ["global.d.ts"]
   },
   "importMap": "import-map.json",
   "tasks": {
