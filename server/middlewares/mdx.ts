@@ -6,7 +6,6 @@ export const [mdxMiddleware] = defineMiddleware(
   "mdxMiddleware",
   async (safe, _req, next) => {
     const { ext } = safe.useContext(FileExtContext);
-    console.log('bolt ext', ext)
     if (ext !== ".md" && ext !== ".mdx") return next();
 
     const res = await next();
@@ -19,8 +18,6 @@ export const [mdxMiddleware] = defineMiddleware(
     const result = await compile(source, {
         jsxImportSource: 'npm:preact'
     });
-
-    console.log(result.toString());
 
     return new Response(result.toString(), {
       headers: res.headers,

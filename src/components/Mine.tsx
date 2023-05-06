@@ -1,6 +1,6 @@
 import { h } from "npm:preact";
 import { css } from "npm:@emotion/css";
-import Test from "../../mdx/test.mdx";
+import Test from "../mdx/test.mdx";
 
 export default () => {
   return (
