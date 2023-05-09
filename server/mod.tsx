@@ -40,5 +40,3 @@ const routed = createRoutes(
 );
 
 Deno.serve((req) => routed(req));
-
-console.log(document);

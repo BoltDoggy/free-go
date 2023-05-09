@@ -23,6 +23,7 @@ export const [typescript] = defineMiddleware(
         jsxFragmentFactory: "Fragment",
       },
     });
+    res.headers.delete('content-length');
     return new Response(result.outputText, {
       headers: res.headers,
     });
