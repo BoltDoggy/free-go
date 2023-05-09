@@ -16,9 +16,9 @@ export const [mdxMiddleware] = defineMiddleware(
 
     const source = await res.text();
     const result = await compile(source, {
-        jsxImportSource: 'npm:preact'
+      jsxImportSource: "npm:preact",
     });
-    res.headers.delete('content-length');
+    res.headers.delete("content-length");
     return new Response(result.toString(), {
       headers: res.headers,
     });
