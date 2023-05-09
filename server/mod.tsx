@@ -1,4 +1,3 @@
-import { serve } from "@std/http/server.ts";
 import { dirname, fromFileUrl, resolve } from "@std/path/mod.ts";
 import {
   createMiddleware as h,
@@ -32,9 +31,14 @@ const routed = createRoutes(
     <Route path="/ws-go" use={WsGo}></Route>
     <Route use={[loggerMiddleware, initCookie, autoUser, autoIndex]}>
       <Route path="/graphql" use={GraphQL}></Route>
-      <Static use={[initFileExt, typescript, mdxMiddleware]} dir={resolve(myDirname, "../src")}></Static>
+      <Static
+        use={[initFileExt, typescript, mdxMiddleware]}
+        dir={resolve(myDirname, "../src")}
+      ></Static>
     </Route>
   </Route>
 );
 
-serve((req) => routed(req));
+Deno.serve((req) => routed(req));
+
+console.log(document);

@@ -1,4 +1,4 @@
-import type { cp, cps } from "../../server/graphql/graphql.generated.ts";
+import type { cp, cps } from "../../../../server/graphql/graphql.generated.ts";
 
 const gql = ([queryDefine]: TemplateStringsArray) => {
   return <Variables, Result>(name: string, defineOption?: RequestInit) => {

@@ -2,8 +2,6 @@ import { BoltOnion } from "./mod.ts";
 
 const a = new BoltOnion<Request, Response>([(_, next) => next()]);
 
-a.exec(new Request(""));
-
 const m = a.defineMiddleware<{
   a: string;
 }>((ctx, next) => {
@@ -27,4 +25,4 @@ b.use<{ c: number }>((ctx, next) => {
   return next();
 });
 
-const c = new BoltOnion<Request, Response>().use(b.exec);
+const c = new BoltOnion<Request, Response>().use(b.compose());

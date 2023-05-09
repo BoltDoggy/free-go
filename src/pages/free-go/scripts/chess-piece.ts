@@ -1,4 +1,4 @@
-import type { cps } from "../../server/graphql/graphql.generated.ts";
+import type { cps } from "../../../../server/graphql/graphql.generated.ts";
 import { queryCps } from "./api.ts";
 import { cpCapacityRef } from "./bg-canvas.ts";
 import { ctx as targetCtx } from "./main-canvas.ts";
