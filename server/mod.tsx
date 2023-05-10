@@ -1,3 +1,4 @@
+import { serve } from "@std/http/server.ts";
 import { dirname, fromFileUrl, resolve } from "@std/path/mod.ts";
 import {
   createMiddleware as h,
@@ -46,4 +47,4 @@ const routed = createRoutes(
   </Route>
 );
 
-Deno.serve((req) => routed(req));
+serve((req) => routed(req));
