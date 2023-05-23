@@ -1,4 +1,5 @@
 {
   "deno.enable": true,
   "mdx.experimentalLanguageServer": true,
+  "deno.unstable": true,
 }
