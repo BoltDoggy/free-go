@@ -2,15 +2,17 @@ import { BoltOnion } from "./mod.ts";
 
 const a = new BoltOnion<Request, Response>([(_, next) => next()]);
 
+a.compose();
+
 const m = a.defineMiddleware<{
   a: string;
-}>((ctx, next) => {
+}>((_ctx, next) => {
   return next();
 });
 
 const n = a.defineMiddleware<{
   b: number;
-}>((ctx, next) => {
+}>((_ctx, next) => {
   return next();
 });
 
