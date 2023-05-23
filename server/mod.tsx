@@ -25,13 +25,6 @@ setupLog({
   },
 });
 
-const kv = await Deno.openKv();
-const userId = crypto.randomUUID();
-await kv.set(["users", userId], {
-  userId,
-  name: "Alice",
-});
-
 const myDirname = dirname(fromFileUrl(import.meta.url));
 
 const routed = createRoutes(
