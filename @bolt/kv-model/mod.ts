@@ -4,6 +4,7 @@ export const defineModel = <T, IndexKey extends keyof T = keyof T>(
   name: string,
   props: {
     indexKeys?: IndexKey[];
+    uniqueKeys?: IndexKey[];
     extras?: (value: T) => Record<string, unknown>;
   } = {}
 ) => {
@@ -11,7 +12,7 @@ export const defineModel = <T, IndexKey extends keyof T = keyof T>(
     _id: string;
   };
 
-  const { indexKeys = [], extras = () => ({}) } = props;
+  const { indexKeys = [], uniqueKeys = [], extras = () => ({}) } = props;
 
   const model = {
     $rebuildIndex: async () => {
@@ -21,7 +22,7 @@ export const defineModel = <T, IndexKey extends keyof T = keyof T>(
         await model.$set(item.value);
       }
     },
-    $$clear: async () => {
+    _DANGER_clear: async () => {
       const list = await model.list();
       /** TODO: 使用 Promise 提高性能 */
       for await (const item of list) {
@@ -39,6 +40,9 @@ export const defineModel = <T, IndexKey extends keyof T = keyof T>(
           _id,
         ]);
       });
+      uniqueKeys.forEach((indexKey) => {
+        kv.delete([`${name}_at_${String(indexKey)}`, String(value[indexKey])]);
+      });
       return kv.delete([name, _id]);
     },
     $set: async (value: Ti) => {
@@ -51,14 +55,22 @@ export const defineModel = <T, IndexKey extends keyof T = keyof T>(
           value
         );
       });
-      console.log(name, _id, value);
+      uniqueKeys.forEach((indexKey) => {
+        kv.set(
+          [`${name}_at_${String(indexKey)}`, String(value[indexKey])],
+          value
+        );
+      });
       return kv.set([name, _id], value);
     },
     list: async () => {
       const kv = await kvPromise;
       return kv.list<Ti>({ prefix: [name] });
     },
-    listBy: async (indexKey: IndexKey, indexKeyValue?: string) => {
+    listBy: async <K extends IndexKey>(
+      indexKey: K,
+      indexKeyValue?: T[K] extends Deno.KvKeyPart ? T[K] : Deno.KvKeyPart
+    ) => {
       const kv = await kvPromise;
       if (indexKeyValue) {
         return kv.list<Ti>({
@@ -71,6 +83,17 @@ export const defineModel = <T, IndexKey extends keyof T = keyof T>(
           reverse: true,
         }
       );
+    },
+    getBy: async <K extends IndexKey>(
+      uniqueKey: K,
+      uniqueKeyValue: never extends T[K]
+        ? Deno.KvKeyPart
+        : T[K] extends Deno.KvKeyPart
+        ? T[K]
+        : Deno.KvKeyPart
+    ) => {
+      const kv = await kvPromise;
+      return kv.get<Ti>([`${name}_at_${String(uniqueKey)}`, uniqueKeyValue]);
     },
     getById: async (id: string) => {
       const kv = await kvPromise;
@@ -92,12 +115,38 @@ export const defineModel = <T, IndexKey extends keyof T = keyof T>(
         })
       );
     },
-    create: (value: T) => {
+    create: (_value: T) => {
       const _id = crypto.randomUUID();
-      return model.wrap({
-        ...value,
+      const value = {
+        ..._value,
         _id,
-      });
+      } as Ti;
+      return {
+        ...extras(value),
+        value,
+        save: async () => {
+          const ret = await Promise.all(
+            uniqueKeys.map(
+              async (uniqueKey) =>
+                [
+                  uniqueKey,
+                  await model.getBy(
+                    uniqueKey,
+                    _value[uniqueKey] as Deno.KvKeyPart
+                  ),
+                ] as const
+            )
+          );
+          const found = ret.find(([_, item]) => item.value);
+          if (found) {
+            const [uniqueKey] = found;
+            throw `${name}.create().save(): ${String(uniqueKey)}=${
+              _value[uniqueKey]
+            }已存在`;
+          }
+          return await model.$set(value);
+        },
+      };
     },
     wrap: (value: Ti) => {
       return {

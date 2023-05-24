@@ -1,11 +1,11 @@
 import { defineModel } from "../../@bolt/kv-model/mod.ts";
 
-export const Passwords = defineModel<{
-  userId: string;
+export const Accounts = defineModel<{
+  username: string;
   signature: ArrayBuffer;
   cryptokey: ArrayBuffer;
-}>("Passwords", {
-  indexKeys: ["userId"],
+}>("Accounts", {
+  uniqueKeys: ["username"],
 });
 
 const enc = new TextEncoder();
@@ -29,30 +29,33 @@ const signature = await crypto.subtle.sign(
   enc.encode("myawesomedata")
 );
 console.log(
-  await Passwords.create({
-    userId: "xxx",
+  await Accounts.create({
+    username: "xxx",
     cryptokey,
     signature,
   }).save()
 );
 
-const a = (await (await Passwords.listBy("userId", "xxx")).next()).value?.value;
+const a = (await (await Accounts.listBy("username", "xxx")).next()).value?.value;
 
 console.log(a);
 
-const cryptokey2 = a && await crypto.subtle.importKey(
-  "raw",
-  a.cryptokey,
-  {
-    name: "HMAC",
-    hash: { name: "SHA-512" },
-  },
-  false,
-  ["sign", "verify"]
-);
+const cryptokey2 =
+  a &&
+  (await crypto.subtle.importKey(
+    "raw",
+    a.cryptokey,
+    {
+      name: "HMAC",
+      hash: { name: "SHA-512" },
+    },
+    false,
+    ["sign", "verify"]
+  ));
 
 const result =
-  a && cryptokey2 &&
+  a &&
+  cryptokey2 &&
   (await crypto.subtle.verify(
     "HMAC",
     cryptokey2,
