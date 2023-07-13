@@ -7,7 +7,7 @@
   },
   "importMap": "import-map.json",
   "tasks": {
-    "start": "deno run -A https://deno.land/x/denon/denon.ts run -A --unstable ./server/mod.tsx",
+    "start": "deno run -A https://deno.land/x/denon/denon.ts run -A ./server/mod.tsx",
     "deploy": "deployctl deploy --project=free-go ./server/mod.tsx --token ddp_IrLcU3RCcNuDiOpHktZ0AN2JHN3f033KKb9w",
     "deploy:prod": "deno task deploy --prod",
     "gen:gql": "deno run -A https://deno.land/x/gen_graphql/gen.ts -e http://127.0.0.1:8000/graphql -o server/graphql/graphql.generated.ts --enums --fetch"
